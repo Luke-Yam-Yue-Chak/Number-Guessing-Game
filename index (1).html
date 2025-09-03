@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI-Like Quiz (Multi-Subject)</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #222; color: #eee; text-align: center; padding: 40px; }
+    h1 { color: #0ff; }
+    .question { font-size: 22px; margin: 20px 0; }
+    input, button { padding: 10px 15px; margin: 8px; font-size: 16px; border-radius: 5px; }
+    #feedback { margin-top: 20px; font-size: 18px; }
+    #coach { margin-top: 15px; font-size: 16px; color: #0f0; }
+  </style>
+</head>
+<body>
+  <h1>🤖 AI-Like Quiz Game</h1>
+  <div class="question" id="question"></div>
+  <input type="text" id="answer" placeholder="Type your answer">
+  <button onclick="check()">Submit</button>
+
+  <p id="feedback"></p>
+  <p id="coach">AI Coach: Ready!</p>
+  <button onclick="next()">Next Question</button>
+
+  <script>
+    let q, correct, category;
+    const history = [];
+
+    // Question banks
+    const capitalQs = [
+      {c: 'France', city: 'Paris'},
+      {c: 'Japan', city: 'Tokyo'},
+      {c: 'Brazil', city: 'Brasília'},
+      {c: 'Canada', city: 'Ottawa'},
+      {c: 'Egypt', city: 'Cairo'}
+    ];
+    const scienceQs = [
+      {q: "What gas do plants release during photosynthesis?", a: "oxygen"},
+      {q: "What is H2O commonly known as?", a: "water"},
+      {q: "What planet is known as the Red Planet?", a: "mars"},
+      {q: "What force keeps us on Earth?", a: "gravity"}
+    ];
+    const historyQs = [
+      {q: "Who was the first president of the USA?", a: "george washington"},
+      {q: "In which year did World War II end?", a: "1945"},
+      {q: "Who was the first man on the Moon?", a: "neil armstrong"},
+      {q: "Which empire built the Colosseum?", a: "roman"}
+    ];
+    const englishQs = [
+      {q: "What is the plural of 'mouse'?", a: "mice"},
+      {q: "What is past tense for 'go'?", a: "went"},
+      {q: "What is the opposite of 'hot'?", a: "cold"},
+      {q: "Fill in the blank: 'She ___ already running.'", a: "is"}
+    ];
+
+    function genQuestion() {
+      const type = ["math", "capital", "science", "history", "english"][Math.floor(Math.random()*5)];
+      category = type;
+
+      if (type === "math") {
+        const a = Math.ceil(Math.random()*12);
+        const b = Math.ceil(Math.random()*12);
+        q = `(${category}) What is ${a} × ${b}?`;
+        correct = (a*b).toString();
+      }
+      else if (type === "capital") {
+        const pick = capitalQs[Math.floor(Math.random()*capitalQs.length)];
+        q = `(Geography) What is the capital of ${pick.c}?`;
+        correct = pick.city.toLowerCase();
+      }
+      else if (type === "science") {
+        const pick = scienceQs[Math.floor(Math.random()*scienceQs.length)];
+        q = `(Science) ${pick.q}`;
+        correct = pick.a.toLowerCase();
+      }
+      else if (type === "history") {
+        const pick = historyQs[Math.floor(Math.random()*historyQs.length)];
+        q = `(History) ${pick.q}`;
+        correct = pick.a.toLowerCase();
+      }
+      else if (type === "english") {
+        const pick = englishQs[Math.floor(Math.random()*englishQs.length)];
+        q = `(English) ${pick.q}`;
+        correct = pick.a.toLowerCase();
+      }
+
+      document.getElementById("question").textContent = q;
+      document.getElementById("answer").value = "";
+      document.getElementById("feedback").textContent = "";
+    }
+
+    function check() {
+      const ans = document.getElementById("answer").value.trim().toLowerCase();
+      const isCorrect = ans === correct;
+      history.push(isCorrect);
+      document.getElementById("feedback").textContent = 
+        isCorrect ? "✅ Correct!" : `❌ Wrong! Correct answer: ${correct}`;
+      document.getElementById("coach").textContent = aiCoach();
+    }
+
+    function aiCoach() {
+      const recent = history.slice(-3);
+      const score = recent.filter(x => x).length;
+      if (recent.length === 0) return "Let's start!";
+      if (score === 3) return "🔥 Amazing streak!";
+      if (score === 2) return "✨ Good job, keep going.";
+      if (score === 1) return "🤔 Focus and try again.";
+      return "💡 Practice makes perfect!";
+    }
+
+    function next() { genQuestion(); }
+
+    genQuestion();
+  </script>
+</body>
+</html>
